@@ -1,0 +1,18 @@
+set terminal pdf noenhanced
+set xlabel '1 + log_2(Number of threads)'
+set ylabel 'Runtime (ns) excluding IO'
+set output sprintf('plots/%s.pdf', TITLE)
+set key noenhanced
+
+set style fill solid 0.25 border -1
+set style boxplot outliers pointtype 3
+set pointsize 0.5
+set style data boxplot
+set boxwidth 0.5 absolute
+
+set title sprintf('plots/%s.dat', TITLE) font 'Arial,14'
+set xtics 1,1,6 scale 0
+set datafile separator ' '
+
+plot for [i=1:6] sprintf('plots/%s.dat', TITLE) using (i):i notitle, \
+     for [i=1:6] sprintf('plots/%s.dats', TITLE) using (i):i notitle with points

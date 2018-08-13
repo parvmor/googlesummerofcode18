@@ -1,0 +1,32 @@
+#!/usr/bin/env python3
+
+import sys
+with open(sys.argv[1], 'r') as f:
+    unka = list(map(lambda x: x.strip().split(' '), f.readlines()))
+with open(sys.argv[2], 'r') as f:
+    mera = list(map(lambda x: x.strip().split(' '), f.readlines()))
+
+unkaSet = {}
+unkaMap = {}
+for i in unka:
+    unkaMap[int(i[0])] = int(i[1])
+    if int(i[1]) not in unkaSet:
+        unkaSet[int(i[1])] = set([])
+    unkaSet[int(i[1])].add(int(i[0]))
+
+meraSet = {}
+meraMap = {}
+for i in mera:
+    rep = int(i[0])
+    meraSet[rep] = set([])
+    for j in i:
+        meraMap[int(j)] = rep
+        meraSet[rep].add(int(j))
+
+for i in unkaMap:
+    if i not in meraMap:
+        print(str(i) + " is their in unka but not in mera.")
+        continue
+    meraRep = meraMap[i]
+    if meraRep not in unkaSet[unkaMap[i]]:
+        print(str(i) + " is in different scc in unka and mera.")

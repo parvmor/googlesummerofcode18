@@ -1,0 +1,9 @@
+set terminal pdf
+set xtics(1, 2, 4, 8, 16, 32)
+set logscale x
+set xlabel 'Number of threads'
+set ylabel 'Runtime (ns) excluding IO'
+set output sprintf('plots/%s.pdf', TITLE)
+set key noenhanced
+
+plot sprintf('plots/%s.dat', TITLE) title TITLE with linespoints

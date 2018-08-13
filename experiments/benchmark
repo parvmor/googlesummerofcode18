@@ -1,0 +1,35 @@
+#!/usr/bin/env sh
+
+set -e
+cd ..
+if [ ! -d sccs ]; then
+    mkdir sccs
+fi
+make compile
+
+RUNS=10
+for run in `seq $RUNS`; do
+    if [ ! ${run} -eq 1 ]; then
+        mv /git/graphsFromDVE/Done/* /git/graphsFromDVE/Remaining
+    fi
+    for i in `ls /git/graphsFromDVE/Remaining/*.dve.txt`; do
+        f1="${i%.dve.txt}"
+        f2="${f1#/git/graphsFromDVE/Remaining/}"
+        if [ -f "sccs/${f2}.exec.${run}" ]; then
+            rm "sccs/${f2}.exec.${run}"
+        fi
+        echo "Starting ${f2}"
+        #parseGraphFromDVE "${f2}.dve" 2>/dev/null
+        for j in 1 2 4 8 16 32; do
+            #if [ -f "sccs/${f2}.scc.${j}" ]; then
+            #    rm "sccs/${f2}.scc.${j}"
+            #fi
+            echo "Processing ${f2} with ${j} threads."
+            #make run ARG="${i}" THREADS="${j}" >"sccs/${f2}.scc.${j}" 2>>"sccs/${f2}.exec"
+            make run GRAPH="${i}" INIT="${i}.init" THREADS="${j}" 2>>"sccs/${f2}.exec.${run}"
+    	echo >> "sccs/${f2}.exec.${run}"
+        done
+        mv ${i} /git/graphsFromDVE/Done
+    done
+done
+cd experiments

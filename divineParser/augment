@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+graph="${1}"
+temp1=$( mktemp )
+sed -E 's/(\d*) (\d*)/\1\n\2/g' "${graph}"  > "${temp1}"
+temp2=$( mktemp )
+cat "${temp1}" | sort | uniq > "${temp2}"
+/git/tarjanconcurrentscc/divineParser/augmentHelper "${graph}" "${temp2}"

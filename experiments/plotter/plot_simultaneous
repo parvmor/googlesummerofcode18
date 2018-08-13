@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+set -e
+
+if [ -d "plots" ]; then
+    rm -rf plots
+fi
+mkdir plots
+
+for i in `ls execs/*exec`; do
+    i=$( basename $i )
+    j=${i%.exec}
+    paste <( cat execs/$i | grep -P "Runtime for algorithm: \d*" | grep -Po "\d*" | tr $'\n' ' ' ) > plots/$j.dats
+done
+
+for i in `ls execs_multiple_runs/*exec.1`; do
+    i=$( basename $i )
+    j=${i%.exec.1}
+    if [ -f "plots/${j}.dat" ]; then
+        rm "plots/${j}.dat"
+    fi
+    data=""
+    for run in `seq 10`; do
+        if [ ${run} -eq 1 ]; then
+            data="${data}"$( cat execs_multiple_runs/${j}.exec.${run} | grep -P "Runtime for algorithm: \d*" | grep -Po "\d*" | tr $'\n' ' ' )
+        else
+            data="${data}"$'\n'$( cat execs_multiple_runs/${j}.exec.${run} | grep -P "Runtime for algorithm: \d*" | grep -Po "\d*" | tr $'\n' ' ' )
+        fi
+    done
+    echo "${data}" >> plots/${j}.dat
+
+    gnuplot -e "TITLE='${j}'" plot_simultaneous.gpi
+done
+
+pdfnup --nup 3x3 --landscape --outfile plot_simultaneous.pdf plots/*.pdf
+rm -rf plots

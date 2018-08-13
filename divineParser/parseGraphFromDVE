@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+
+set -e
+
+dve2lts-mc --strategy=tarjan --threads=1 -s28 /git/ppopp16/experiments/graphs/beem/"${1}" > /git/graphsFromDVE/"${1}.txt"
+/git/tarjanconcurrentscc/divineParser/augment /git/graphsFromDVE/"${1}.txt"

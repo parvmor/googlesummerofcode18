@@ -1,0 +1,20 @@
+#!/usr/bin/env python3
+
+import sys
+
+with open(sys.argv[2], 'r') as f:
+	l = list(map(lambda x: int(x.strip()), f.readlines()))
+
+nodes = {}
+cnt = 0
+for i in l:
+	if i not in nodes:
+		nodes[i] = cnt
+		cnt += 1
+
+with open(sys.argv[1], 'r') as f:
+	l = list(map(lambda x: x.strip().split(' '), f.readlines()))
+
+with open(sys.argv[1], 'w') as f:
+	for i in l:
+		f.write(str(nodes[int(i[0])]) + ' ' + str(nodes[int(i[1])]) + '\n')
