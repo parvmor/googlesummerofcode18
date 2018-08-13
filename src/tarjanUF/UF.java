@@ -51,23 +51,35 @@ public class UF {
     /********* Union find Operations ****************/
 
     // find is used to find the root of the union find tree
-    // in which the node belongs. It uses path compression
+    // in which the node belongs. It uses path splitting
     // as an optimization technique.
     public int find(int nodeId) {
         UFNode node = this.list.get(nodeId);
         int parent = node.parent();
-
-        // The node is itself a root in the union find tree.
         if (parent == 0) {
             return nodeId;
         }
-
-        int root = this.find(parent);
-        // Compress the path from the node to root of the tree atomically.
-        if (root != parent) {
-            UFNode.parentUpdater.set(node, root);
+        int grandparent = this.list.get(parent).parent();
+        if (grandparent == 0) {
+            return parent;
         }
-        return root;
+
+        while (grandparent != 0) {
+            UFNode.parentUpdater.set(node, grandparent);
+            nodeId = parent;
+            node = this.list.get(nodeId);
+            parent = node.parent();
+            if (parent == 0) {
+                return nodeId;
+            }
+            grandparent = this.list.get(parent).parent();
+            if (grandparent == 0) {
+                return parent;
+            }
+        }
+
+        assert grandparent == 0;
+        return parent;
     }
 
     // sameSet checks whether 'node a' and 'node b' are in the same union find tree.
